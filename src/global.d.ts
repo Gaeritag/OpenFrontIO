@@ -1,4 +1,4 @@
-import 'express-session';
+
 declare module "*.png" {
   const content: string;
   export default content;
@@ -37,6 +37,7 @@ declare module "*.json" {
   const value: any;
   export default value;
 }
+import 'express-session';
 declare module 'express-session' {
   interface SessionData {
     user?: {
