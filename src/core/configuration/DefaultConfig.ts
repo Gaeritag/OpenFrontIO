@@ -41,6 +41,17 @@ export abstract class DefaultServerConfig implements ServerConfig {
   r2SecretKey(): string {
     return process.env.R2_SECRET_KEY;
   }
+  sessionSecret(): string {
+    return process.env.SESSION_SECRET;
+  }
+  discordClientId(): string {
+    return process.env.DISCORD_CLIENT_ID;
+  }
+  
+  discordClientSecret(): string {
+    return process.env.DISCORD_CLIENT_SECRET;
+  }
+}
   abstract r2Bucket(): string;
   adminHeader(): string {
     return "x-admin-key";
