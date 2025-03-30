@@ -33,6 +33,17 @@ export class DevServerConfig extends DefaultServerConfig {
   gitCommit(): string {
     return "DEV";
   }
+  discordClientId(): string {
+    return "YOUR_DEV_DISCORD_CLIENT_ID";
+  }
+  
+  discordClientSecret(): string {
+    return "YOUR_DEV_DISCORD_CLIENT_SECRET";
+  }
+  
+  sessionSecret(): string {
+    return "dev_session_secret_do_not_use_in_production";
+  }
 }
 
 export class DevConfig extends DefaultConfig {
