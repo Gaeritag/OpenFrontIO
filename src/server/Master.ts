@@ -12,6 +12,9 @@ import { fileURLToPath } from "url";
 import { gatekeeper, LimiterType } from "./Gatekeeper";
 import { setupMetricsServer } from "./MasterMetrics";
 import { logger } from "./Logger";
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import fetch from 'node-fetch';
 
 const config = getServerConfigFromServer();
 const readyWorkers = new Set();
@@ -67,6 +70,19 @@ app.use(
 let publicLobbiesJsonStr = "";
 
 const publicLobbyIDs: Set<string> = new Set();
+//discord stuff
+app.use(cookieParser());
+app.use(
+  session({
+    secret: config.sessionSecret(),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: config.env() !== GameEnv.Dev, 
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week(can be changed)
+    }
+  })
+);
 
 // Start the master process
 export async function startMaster() {
@@ -321,7 +337,98 @@ function allNonConsecutive(maps: GameMapType[]): boolean {
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+app.get('/auth/discord', (req, res) => {
+  const redirectUri = config.discordRedirectURI();
+  const clientId = config.discordClientId();
+  
+  const scope = encodeURIComponent('identify');
+  const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}`;
+  
+  res.redirect(authUrl);
+});
+app.get('/auth/callback', async (req, res) => {
+  const { code } = req.query;
+  
+  if (!code) {
+    log.error('No code provided in Discord callback');
+    return res.redirect('/?error=no_code');
+  }
+  
+  try {
+    const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: config.discordClientId(),
+        client_secret: config.discordClientSecret(),
+        grant_type: 'authorization_code',
+        code: code.toString(),
+        redirect_uri: config.discordRedirectURI(),
+      }),
+    });
+    
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.json();
+      log.error('Discord token error:', errorData);
+      return res.redirect('/?error=token_error');
+    }
+    
+    const tokenData = await tokenResponse.json();
+    const { access_token } = tokenData;
+    
+    // fet user info
+    const userResponse = await fetch('https://discord.com/api/users/@me', {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    
+    if (!userResponse.ok) {
+      log.error('Failed to get Discord user data');
+      return res.redirect('/?error=user_data_error');
+    }
+    
+    const userData = await userResponse.json();
+    req.session.user = {
+      id: userData.id,
+      username: userData.username,
+      discriminator: userData.discriminator,
+      avatar: userData.avatar,
+      accessToken: access_token,
+    };
+    res.redirect('/');
+  } catch (error) {
+    log.error('Error in Discord auth callback:', error);
+    res.redirect('/?error=auth_error');
+  }
+});
+app.get('/auth/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      log.error('Error destroying session:', err);
+    }
+    res.redirect('/');
+  });
+});
 
+app.get('/api/current_user', (req, res) => {
+  if (req.session.user) {
+    res.json({
+      isLoggedIn: true,
+      user: {
+        id: req.session.user.id,
+        username: req.session.user.username,
+        avatar: req.session.user.avatar,
+      },
+    });
+  } else {
+    res.json({
+      isLoggedIn: false,
+    });
+  }
+});
 // SPA fallback route
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "../../static/index.html"));
