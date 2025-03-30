@@ -57,4 +57,14 @@ export class TestServerConfig implements ServerConfig {
   r2SecretKey(): string {
     throw new Error("Method not implemented.");
   }
+   discordClientId(): string {
+    throw new Error("Method not implemented.");
+  }
+   discordClientSecret(): string {
+    throw new Error("Method not implemented.");
+  }
+  sessionSecret(): string {
+    throw new Error("Method not implemented.");
+  }
+  
 }
