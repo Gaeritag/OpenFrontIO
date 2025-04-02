@@ -12,7 +12,8 @@ import { generateID } from "../core/Util";
 import { gatekeeper, LimiterType } from "./Gatekeeper";
 import { logger } from "./Logger";
 import { setupMetricsServer } from "./MasterMetrics";
-
+import cookieParser from 'cookie-parser';
+import authRoutes from './AuthRoutes';
 const config = getServerConfigFromServer();
 const readyWorkers = new Set();
 
@@ -28,6 +29,7 @@ const log = logger.child({ component: "Master" });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   express.static(path.join(__dirname, "../../static"), {
     maxAge: "1y", // Set max-age to 1 year for all static assets
@@ -328,7 +330,7 @@ function allNonConsecutive(maps: GameMapType[]): boolean {
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
+app.use('/api/auth', authRoutes);
 // SPA fallback route
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "../../static/index.html"));

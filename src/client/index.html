@@ -211,6 +211,29 @@
           <flag-input class="w-[20%] md:w-[15%]"></flag-input>
           <username-input class="w-full"></username-input>
         </div>
+        <button id="discord-login-btn" class="logged-out">Login with Discord</button>
+
+
+            <style>
+  #discord-login-btn {
+    background-color: #5865F2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  #discord-login-btn:hover {
+    background-color: #4752C4;
+  }
+  
+  #discord-login-btn.logged-in {
+    background-color: #36393F;
+  }
+                </style>
         <div>
           <a
             target="_blank"
