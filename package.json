@@ -38,6 +38,8 @@
     "@types/uuid": "^10.0.0",
     "@types/winston": "^2.4.4",
     "@types/ws": "^8.5.11",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/node-fetch": "^2.5.12",
     "autoprefixer": "^10.4.20",
     "babel-jest": "^29.7.0",
     "binary-base64-loader": "^1.0.0",
@@ -128,7 +130,10 @@
     "wheelnav": "^1.7.1",
     "winston": "^3.17.0",
     "ws": "^8.18.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "cookie-parser": "^1.4.6",
+    "node-fetch": "2",
+    "querystring": "^0.2.0"
   },
   "type": "module"
 }
