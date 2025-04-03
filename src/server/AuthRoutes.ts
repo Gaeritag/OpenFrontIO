@@ -1,12 +1,12 @@
-// src/server/routes/AuthRoutes.ts
+// src/server/AuthRoutes.ts
 import express from 'express';
 import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
-import { getServerConfigFromServer } from '../../core/configuration/ConfigLoader';
-import { Database } from '../db/DB';
-import pool from '../db/Index';
-import { logger } from '../Logger';
-import { gatekeeper, LimiterType } from '../Gatekeeper';
+import { getServerConfigFromServer } from '../core/configuration/ConfigLoader';
+import { Database } from './db/DB';
+import pool from './db/Index';
+import { logger } from './Logger';
+import { gatekeeper, LimiterType } from './Gatekeeper';
 import crypto from 'crypto';
 import querystring from 'querystring';
 
