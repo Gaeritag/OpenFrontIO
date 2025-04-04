@@ -122,14 +122,15 @@ class Auth {
   }
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
   Auth.getInstance();
 });
 
-function getAuth() {
+
+export function getAuth() {
   return Auth.getInstance();
 }
 
-// Make functions and class available globally
-window.Auth = Auth;
-window.getAuth = getAuth;
+
+export default Auth;
