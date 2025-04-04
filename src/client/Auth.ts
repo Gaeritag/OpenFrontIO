@@ -1,23 +1,23 @@
-export class Auth {
-  private static instance: Auth;
-  private loginButton: HTMLElement | null = null;
-  private isLoggedIn: boolean = false;
-  private sessionId: string | null = null;
-  private username: string | null = null;
+class Auth {
+  static instance;
+  loginButton = null;
+  isLoggedIn = false;
+  sessionId = null;
+  username = null;
 
-  private constructor() {
+  constructor() {
     this.initializeLoginButton();
     this.checkLoginStatus();
   }
 
-  public static getInstance(): Auth {
+  static getInstance() {
     if (!Auth.instance) {
       Auth.instance = new Auth();
     }
     return Auth.instance;
   }
 
-  private initializeLoginButton(): void {
+  initializeLoginButton() {
     document.addEventListener('DOMContentLoaded', () => {
       this.loginButton = document.getElementById('discord-login-btn');
       
@@ -33,7 +33,7 @@ export class Auth {
     });
   }
 
-  private async checkLoginStatus(): Promise<void> {
+  async checkLoginStatus() {
     try {
       const response = await fetch('/api/auth/status');
       
@@ -61,7 +61,7 @@ export class Auth {
     }
   }
 
-  private updateLoginButton(): void {
+  updateLoginButton() {
     if (!this.loginButton) {
       this.loginButton = document.getElementById('discord-login-btn');
       if (!this.loginButton) return;
@@ -78,12 +78,12 @@ export class Auth {
     }
   }
 
-  private login(): void {
+  login() {
     localStorage.setItem('auth_redirect', window.location.href);
     window.location.href = '/api/auth/discord';
   }
 
-  private async logout(): Promise<void> {
+  async logout() {
     try {
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
@@ -104,23 +104,32 @@ export class Auth {
       console.error('Error during logout:', error);
     }
   }
-  //to refresh login state man.
-  public refreshAuthState(): void {
+
+  refreshAuthState() {
     this.checkLoginStatus();
   }
-  public isAuthenticated(): boolean {
+
+  isAuthenticated() {
     return this.isLoggedIn;
   }
-  public getSessionId(): string | null {
+
+  getSessionId() {
     return this.sessionId;
   }
-  public getUsername(): string | null {
+
+  getUsername() {
     return this.username;
   }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   Auth.getInstance();
 });
-export function getAuth(): Auth {
+
+function getAuth() {
   return Auth.getInstance();
 }
+
+// Make functions and class available globally
+window.Auth = Auth;
+window.getAuth = getAuth;
