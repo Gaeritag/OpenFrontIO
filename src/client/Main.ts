@@ -28,6 +28,8 @@ import { generateCryptoRandomUUID } from "./Utils";
 import "./components/baseComponents/Button";
 import "./components/baseComponents/Modal";
 import "./styles.css";
+import { AuthButton } from "./components/baseComponents/AuthButton";
+import "./styles/auth.css";
 
 export interface JoinLobbyEvent {
   clientID: string;

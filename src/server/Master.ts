@@ -12,7 +12,7 @@ import { gatekeeper, LimiterType } from "./Gatekeeper";
 import { logger } from "./Logger";
 import { MapPlaylist } from "./MapPlaylist";
 import { setupMetricsServer } from "./MasterMetrics";
-
+import { setupDiscordAuth } from "./DiscordAuth";
 const config = getServerConfigFromServer();
 const playlist = new MapPlaylist();
 const readyWorkers = new Set();
@@ -274,7 +274,7 @@ async function schedulePublicGame(playlist: MapPlaylist) {
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
+setupDiscordAuth(app);
 // SPA fallback route
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "../../static/index.html"));
